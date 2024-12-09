@@ -6,19 +6,21 @@ namespace AlexP
 {
     public class Fireball : MonoBehaviour
     {
-        public GameObject projectile;
-        public GameObject explosionVFX;
+        [SerializeField] GameObject projectile;
+        [SerializeField] GameObject explosionVFX;
 
         [SerializeField] int damageAmount = 1;
         [SerializeField] float knockbackForce = 1;
         [SerializeField] GameObject hitEffectPrefab;
         [SerializeField] AudioClipCollection hitSounds;
+        [SerializeField] AudioClipCollection fireballSound;
 
         float fireballLife = 0;
 
         private void Start()
         {
             projectile.transform.parent = null;
+            SoundEffectsManager.instance.PlayRandomClip(fireballSound.clips, true);
         }
 
         private void Update()

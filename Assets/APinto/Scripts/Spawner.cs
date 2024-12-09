@@ -1,53 +1,46 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.Controls;
 
 namespace AlexP
 {
     public class Spawner : MonoBehaviour
     {
-        public GameObject Projectile;
-        public float projectileSpeed;
-        public GameObject player;
-        public float timeBetweenFireballs;
-        public float timeBetweenAOEAttack;
+        [SerializeField] GameObject Projectile;
+        [SerializeField] GameObject player;
+        [SerializeField] float projectileSpeed;
+        [SerializeField] AudioClip fireballSound;
+        [SerializeField] AudioClip flameSound;
 
-        bool enableFireball;
-        
-
-        void Update()
-        {
-            timeBetweenFireballs += 1 * Time.deltaTime;
-            timeBetweenAOEAttack += 1 * Time.deltaTime;
-
-            if (timeBetweenFireballs > 1 && enableFireball == false)
-            {
-                Fireball();
-                timeBetweenFireballs = 0;
-            }
-
-            if (timeBetweenAOEAttack > 20)
-            {
-                enableFireball = true;
-                Fireball();
-                StartCoroutine(AOEAttack());
-            }
-        }
-
-        private void Fireball()
+        public void Fireball()
         {
             GameObject fireball = Instantiate(Projectile, transform) as GameObject;
             Rigidbody rb = fireball.GetComponent<Rigidbody>();
             Vector3 direction = (player.transform.position - transform.position).normalized;
             rb.AddForce(direction * projectileSpeed, ForceMode.Impulse);
+            SoundEffectsManager.instance.PlayAudioClip(fireballSound, true);
         }
 
-        IEnumerator AOEAttack()
+        public void flameTimer()
         {
-            yield return new WaitForSeconds(10.0f);
-            timeBetweenAOEAttack = 0;
-            enableFireball = false;
+            StartCoroutine(Flame());
+        }
+
+        IEnumerator Flame()
+        {
+            yield return new WaitForSeconds(0.01f);
+            GameObject fireball = Instantiate(Projectile, transform) as GameObject;
+            Rigidbody rb = fireball.GetComponent<Rigidbody>();
+            Vector3 direction = (player.transform.position - transform.position).normalized;
+            rb.AddForce(direction * projectileSpeed, ForceMode.Impulse);
+            flameSoundStart();
+        }
+
+        public void flameSoundStart()
+        {
+            if(!SoundEffectsManager.instance)
+            {
+                SoundEffectsManager.instance.PlayAudioClip(flameSound, true);
+            }
         }
     }
 }
